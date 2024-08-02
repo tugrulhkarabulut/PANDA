@@ -51,7 +51,7 @@ class GNN(torch.nn.Module):
         self.args = args
         self.num_relations = args.num_relations
         self.layer_type = args.layer_type
-        if self.layer_type in ["PANDA-GCN", "PANDA-GIN"]: 
+        if self.layer_type in ["PANDA-GCN", "PANDA-GIN", "PANDA-RGCN", "PANDA-RGIN"]: 
             self.exp_factor = args.exp_factor
             self.in_features_exp = args.input_dim
         num_features = [args.input_dim] + list(args.hidden_layers) + [args.output_dim]
