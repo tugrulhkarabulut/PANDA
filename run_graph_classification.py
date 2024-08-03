@@ -10,7 +10,7 @@ import torch
 import numpy as np
 import pandas as pd
 from hyperparams import get_args_from_input
-from preprocessing import rewiring, sdrf, fosr, digl, panda
+from preprocessing import rewiring, sdrf, fosr, digl, panda, virtual
 import os
 import wandb
 import random
@@ -104,8 +104,10 @@ for key in datasets:
         for i in range(len(dataset)):
             dataset[i].centrality = panda.measure_centrality(dataset[i], centrality_measure=args.centrality,
                                                             index=i, save_path=f"centrality/{key}")
-    else:
-        pass
+    elif args.rewiring == "virtual":
+        transform = virtual.AddVirtualNodes(5, 2, 1, False)
+        for i in range(len(dataset)):
+            dataset[i] = transform(dataset[i])
 
     if args.wandb:
         os.environ["WANDB_MODE"] = "run"
