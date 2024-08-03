@@ -11,6 +11,7 @@ def dirichlet_energy(X, edge_index):
     for I in range(m):
         u = edge_index[0][I]
         degrees[u] += 1
+    print(degrees)
     y = np.linalg.norm(X.flatten()) ** 2
     for I in range(m):
         for i in range(l):
