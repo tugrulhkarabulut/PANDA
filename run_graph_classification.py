@@ -4,7 +4,7 @@ Test rewired GNN performance on graph classifiation benchmarks.
 
 from attrdict import AttrDict
 from torch_geometric.datasets import TUDataset
-from torch_geometric.utils import to_networkx, from_networkx, to_dense_adj
+from torch_geometric.utils import to_networkx, from_networkx, to_dense_adj, degree
 from experiments.graph_classification import Experiment
 import torch
 import numpy as np
@@ -122,6 +122,12 @@ for key in datasets:
         args = wandb.config
         wandb.config.update(args)
         wandb.define_metric("epoch_step")  # Customize axes - https://docs.wandb.ai/guides/track/log
+
+
+    for graph in dataset:
+        degrees = degree(graph.edge_index[0], graph.num_nodes)
+        print(list(degrees), sum(degrees == 0))
+
 
     for trial in range(args.num_trials):
         train_acc, validation_acc, test_acc, energy = Experiment(args=args, dataset=dataset).run()
