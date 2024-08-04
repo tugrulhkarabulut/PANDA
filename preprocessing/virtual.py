@@ -36,14 +36,16 @@ class AddVirtualNodes(BaseTransform):
             device=device,
         )
 
-        central_edges_mask = torch.isin(data.edge_index[0], central_nodes)
-        central_edges = data.edge_index[:, central_edges_mask]
-        central_edges = torch.repeat_interleave(
-            central_edges, repeats=self.replication_factor, dim=1
+
+        ## Distributing out edges
+        central_edges_out_mask = torch.isin(data.edge_index[0], central_nodes)
+        central_edges_out = data.edge_index[:, central_edges_out_mask]
+        central_edges_out = torch.repeat_interleave(
+            central_edges_out, repeats=self.replication_factor, dim=1
         )
         central_edges_source_indices = []
         central_edge_counter = Counter()
-        for node in central_edges[0].tolist():
+        for node in central_edges_out[0].tolist():
             local_index = central_edge_counter[node] % self.workers_per_node
             global_index = (
                 data.num_nodes
@@ -54,7 +56,28 @@ class AddVirtualNodes(BaseTransform):
             central_edge_counter.update([node])
 
         central_edges_source_indices = torch.tensor(central_edges_source_indices)
-        central_edges[0] = central_edges_source_indices
+        central_edges_out[0] = central_edges_source_indices
+
+        # Distributing in edges
+        central_edges_in_mask = torch.isin(data.edge_index[1], central_nodes)
+        central_edges_in = data.edge_index[:, central_edges_in_mask]
+        central_edges_in = torch.repeat_interleave(
+            central_edges_in, repeats=self.replication_factor, dim=1
+        )
+        central_edges_dest_indices = []
+        central_edge_counter = Counter()
+        for node in central_edges_in[1].tolist():
+            local_index = central_edge_counter[node] % self.workers_per_node
+            global_index = (
+                data.num_nodes
+                + central_nodes_to_index[node] * self.workers_per_node
+                + local_index
+            )
+            central_edges_dest_indices.append(global_index)
+            central_edge_counter.update([node])
+
+        central_edges_dest_indices = torch.tensor(central_edges_dest_indices)
+        central_edges_in[1] = central_edges_dest_indices
 
         node_to_virt_edges = torch.tensor(
             [
@@ -66,15 +89,43 @@ class AddVirtualNodes(BaseTransform):
         ).T
         node_to_virt_edges = to_undirected(node_to_virt_edges)
 
+
+        central_edges_out_expanded = []
+        for source, dest in central_edges_out.T.tolist():
+            if dest in central_nodes_to_index:
+                virt_index_start = (
+                    data.num_nodes
+                    + central_nodes_to_index[dest] * self.workers_per_node
+                )
+                for virt_index in range(virt_index_start, virt_index_start + self.workers_per_node):
+                    central_edges_out_expanded.append([source, virt_index])
+            else:
+                central_edges_out_expanded.append([source, dest])
+        central_edges_out_expanded = torch.tensor(central_edges_out_expanded, device=device).T
+
+        central_edges_in_expanded = []
+        for source, dest in central_edges_in.T.tolist():
+            if source in central_nodes_to_index:
+                virt_index_start = (
+                    data.num_nodes
+                    + central_nodes_to_index[source] * self.workers_per_node
+                )
+                for virt_index in range(virt_index_start, virt_index_start + self.workers_per_node):
+                    central_edges_in_expanded.append([virt_index, dest])
+            else:
+                central_edges_in_expanded.append([source, dest])
+        central_edges_in_expanded = torch.tensor(central_edges_in_expanded, device=device).T
+
         edge_types = torch.cat(
             [
                 torch.zeros(data.edge_index.shape[1], device=device),
-                torch.ones(central_edges.shape[1], device=device),
+                torch.ones(central_edges_out_expanded.shape[1], device=device),
+                torch.ones(central_edges_in_expanded.shape[1], device=device),
                 torch.full((node_to_virt_edges.shape[1],), 2.0, device=device),
             ],
         )
         data.edge_index = torch.cat(
-            [data.edge_index, central_edges, node_to_virt_edges], dim=1
+            [data.edge_index, central_edges_out_expanded, central_edges_in_expanded, node_to_virt_edges], dim=1
         )
         etype_to_str = {
             0: "orig",
@@ -129,7 +180,7 @@ class AddVirtualNodes(BaseTransform):
             data.y = data.y[nodes_without_originals]
 
         data.num_nodes = data.num_nodes - num_selected_nodes
-
+        
         if self.return_hetero_data:
             hetero_data = HeteroData()
             hetero_data["node"].x = data.x
@@ -142,9 +193,8 @@ class AddVirtualNodes(BaseTransform):
                 ].edge_index = data.edge_index[:, edge_types == e_typ]
 
             return hetero_data
-        else:
-            data.edge_type = edge_types
 
+        
         return data
 
     def __repr__(self) -> str:
