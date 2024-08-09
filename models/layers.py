@@ -104,7 +104,7 @@ class PandaGCNConv(MessagePassing):
             # x_j = torch.gather(x_j, 1, torch.topk(scores, self.out_channels, dim=1)[1])
             # paddings = torch.zeros(x_j.size(0), self.out_channels_max_degree-self.out_channels, device=x_j.device)
             # x_j = torch.cat([x_j, paddings], dim=-1)
-            x_j[max_degree_mask] = self.select_ff(x_j)
+            x_j = self.select_ff(x_j)
         return x_j if edge_weight is None else edge_weight.view(-1, 1) * x_j
 
     def message_and_aggregate(self, adj_t: SparseTensor, x: Tensor) -> Tensor:
