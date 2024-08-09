@@ -30,6 +30,7 @@ class PandaGCNConv(MessagePassing):
         self.weight = torch.nn.Parameter(torch.Tensor(in_channels, out_channels))
         self.weight_max_degree = torch.nn.Parameter(torch.Tensor(in_channels_exp, out_channels_exp))
         self.select = torch.nn.Linear(out_channels+out_channels_exp, out_channels_exp)
+        self.select_ff = torch.nn.Linear(out_channels_exp, out_channels)
         self.lin_ne_expansion = torch.nn.Linear(out_channels, out_channels_exp)
 
         self.reset_parameters()
@@ -97,12 +98,13 @@ class PandaGCNConv(MessagePassing):
             x_j_temp = x_j[:,:self.out_channels]
             x_j = self.lin_ne_expansion(x_j_temp)
         elif message_type == 'en':
-            x_i_temp = x_i[:,:self.out_channels]
-            combined = torch.concat([x_i_temp, x_j],dim=1)
-            scores = torch.softmax(torch.relu(self.select(combined)),dim=-1)
-            x_j = torch.gather(x_j, 1, torch.topk(scores, self.out_channels, dim=1)[1])
-            paddings = torch.zeros(x_j.size(0), self.out_channels_max_degree-self.out_channels, device=x_j.device)
-            x_j = torch.cat([x_j, paddings], dim=-1)
+            # x_i_temp = x_i[:,:self.out_channels]
+            # combined = torch.concat([x_i_temp, x_j],dim=1)
+            # scores = torch.softmax(torch.relu(self.select(combined)),dim=-1)
+            # x_j = torch.gather(x_j, 1, torch.topk(scores, self.out_channels, dim=1)[1])
+            # paddings = torch.zeros(x_j.size(0), self.out_channels_max_degree-self.out_channels, device=x_j.device)
+            # x_j = torch.cat([x_j, paddings], dim=-1)
+            x_j[max_degree_mask] = self.select_ff(x_j[max_degree_mask])
         return x_j if edge_weight is None else edge_weight.view(-1, 1) * x_j
 
     def message_and_aggregate(self, adj_t: SparseTensor, x: Tensor) -> Tensor:
