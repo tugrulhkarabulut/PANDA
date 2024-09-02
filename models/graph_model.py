@@ -93,6 +93,8 @@ class GNN(torch.nn.Module):
             return SAGEConv(in_features, out_features)
         elif self.layer_type == "FiLM":
             return FiLMConv(in_features, out_features)
+        elif self.layer_type == "GAT":  # Added GAT option
+            return GATConv(in_features, out_features)
         elif self.layer_type == "PANDA-GCN":
             if last_flag:
                 return PandaGCNConv(in_features, out_features, self.in_features_exp, out_features) 
