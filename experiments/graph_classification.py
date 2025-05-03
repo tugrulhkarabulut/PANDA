@@ -49,6 +49,7 @@ class Experiment:
                 else:
                     self.args.num_relations = 2
         self.model = GNN(self.args).to(self.device)
+        print("MODEL:", self.model)
        
         # randomly assign a train/validation/test split, or train/validation split if test already assigned
         if self.test_dataset is None:
