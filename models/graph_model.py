@@ -60,10 +60,14 @@ class GNN(torch.nn.Module):
         self.top_k = args.top_k
         self.centrality_measure = args.centrality
         last_flag = False
+
+        # Add initial fully connected layer
+        self.initial_fc = torch.nn.Linear(args.input_dim, args.hidden_layers[0])
+
         for i, (in_features, out_features) in enumerate(zip(num_features[:-1], num_features[1:])):
             if i == self.num_layers - 1:
                 last_flag = True
-            layers.append(self.get_layer(in_features, out_features, last_flag))
+            layers.append(self.get_layer(in_features if i > 0 else args.hidden_layers[0], out_features, last_flag))
         self.layers = ModuleList(layers)
         print(self.layers)
         self.dropout = Dropout(p=args.dropout)
@@ -121,6 +125,9 @@ class GNN(torch.nn.Module):
     def forward(self, graph, measure_dirichlet=False):
         x, edge_index, ptr, batch = graph.x, graph.edge_index, graph.ptr, graph.batch
         x = x.float()
+
+        # Pass through the initial fully connected layer
+        x = self.initial_fc(x)
 
         if self.layer_type in ["PANDA-GCN", "PANDA-GIN", "PANDA-RGCN", "PANDA-RGIN"]:
             if self.centrality_measure != 'degree_simple':
