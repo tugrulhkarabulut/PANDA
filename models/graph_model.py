@@ -53,8 +53,8 @@ class GNN(torch.nn.Module):
         self.layer_type = args.layer_type
         if self.layer_type in ["PANDA-GCN", "PANDA-GIN"]: 
             self.exp_factor = args.exp_factor
-            self.in_features_exp = args.input_dim
-        num_features = [args.input_dim] + list(args.hidden_layers) + [args.output_dim]
+            self.in_features_exp = args.hidden_layers[0]
+        num_features = [args.hidden_layers[0]] + list(args.hidden_layers) + [args.output_dim]
         self.num_layers = len(num_features) - 1
         layers = []
         self.top_k = args.top_k
