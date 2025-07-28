@@ -1,9 +1,9 @@
-python run_node_classification.py --rewiring=panda --dataset=cora --layer_type=PANDA-GCN --hidden_dim=64 --exp_factor=1.5 --centrality=betweenness --top_k=50 --device=0 --num_trials=50
-python run_node_classification.py --rewiring=panda --dataset=citeseer --layer_type=PANDA-GCN --hidden_dim=64 --exp_factor=1.5 --centrality=betweenness --top_k=50 --device=0 --num_trials=50
-python run_node_classification.py --rewiring=panda --dataset=texas --layer_type=PANDA-GCN --hidden_dim=64 --exp_factor=1.5 --centrality=betweenness --top_k=50 --device=0 --num_trials=50
-python run_node_classification.py --rewiring=panda --dataset=cornell --layer_type=PANDA-GCN --hidden_dim=64 --exp_factor=1.5 --centrality=betweenness --top_k=50 --device=0 --num_trials=50
-python run_node_classification.py --rewiring=panda --dataset=wisconsin --layer_type=PANDA-GCN --hidden_dim=64 --exp_factor=1.5 --centrality=betweenness --top_k=50 --device=0 --num_trials=50
-python run_node_classification.py --rewiring=panda --dataset=chameleon --layer_type=PANDA-GCN --hidden_dim=64 --exp_factor=1.5 --centrality=betweenness --top_k=50 --device=0 --num_trials=50
-python run_node_classification.py --rewiring=panda --dataset=chameleon --layer_type=PANDA-GCN --hidden_dim=64 --exp_factor=1.25 --centrality=betweenness --top_k=50 --device=0 --num_trials=50
-python run_node_classification.py --rewiring=panda --dataset=chameleon --layer_type=PANDA-GCN --hidden_dim=64 --exp_factor=1.5 --centrality=degree --top_k=50 --device=0 --num_trials=50
-python run_node_classification.py --rewiring=panda --dataset=chameleon --layer_type=PANDA-GCN --hidden_dim=64 --exp_factor=1.25 --centrality=degree --top_k=50 --device=0 --num_trials=50
+python run_node_classification.py --rewiring=panda --dataset=cora --layer_type=PANDA-GCN --hidden_dim=64 --num_layers=4 --exp_factor=1.5 --centrality=betweenness --top_k=50 --device=0 --num_trials=50
+python run_node_classification.py --rewiring=panda --dataset=citeseer --layer_type=PANDA-GCN --hidden_dim=64 --num_layers=4 --exp_factor=1.5 --centrality=betweenness --top_k=50 --device=0 --num_trials=50
+python run_node_classification.py --rewiring=panda --dataset=texas --layer_type=PANDA-GCN --hidden_dim=64 --num_layers=4 --exp_factor=1.5 --centrality=betweenness --top_k=50 --device=0 --num_trials=50
+python run_node_classification.py --rewiring=panda --dataset=cornell --layer_type=PANDA-GCN --hidden_dim=64 --num_layers=4 --exp_factor=1.5 --centrality=betweenness --top_k=50 --device=0 --num_trials=50
+python run_node_classification.py --rewiring=panda --dataset=wisconsin --layer_type=PANDA-GCN --hidden_dim=64 --num_layers=4 --exp_factor=1.5 --centrality=betweenness --top_k=50 --device=0 --num_trials=50
+python run_node_classification.py --rewiring=panda --dataset=chameleon --layer_type=PANDA-GCN --hidden_dim=64 --num_layers=4 --exp_factor=1.5 --centrality=betweenness --top_k=50 --device=0 --num_trials=50
+python run_node_classification.py --rewiring=panda --dataset=chameleon --layer_type=PANDA-GCN --hidden_dim=64 --num_layers=4 --exp_factor=1.25 --centrality=betweenness --top_k=50 --device=0 --num_trials=50
+python run_node_classification.py --rewiring=panda --dataset=chameleon --layer_type=PANDA-GCN --hidden_dim=64 --num_layers=4 --exp_factor=1.5 --centrality=degree --top_k=50 --device=0 --num_trials=50
+python run_node_classification.py --rewiring=panda --dataset=chameleon --layer_type=PANDA-GCN --hidden_dim=64 --num_layers=4 --exp_factor=1.25 --centrality=degree --top_k=50 --device=0 --num_trials=50
