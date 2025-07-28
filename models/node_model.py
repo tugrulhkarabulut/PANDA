@@ -36,6 +36,8 @@ class GCN(torch.nn.Module):
         self.layer_type = args.layer_type
         self.cached_centrality = None
         self.cached_exp_mask = None
+        self.top_k = args.top_k
+        self.centrality_measure = args.centrality
         
         if self.layer_type in ["PANDA-GCN", "PANDA-GIN"]: 
             self.exp_factor = args.exp_factor
@@ -47,8 +49,6 @@ class GCN(torch.nn.Module):
         num_features = [args.input_dim] + list(args.hidden_layers) + [args.output_dim]
         self.num_layers = len(num_features) - 1
         layers = []
-        self.top_k = args.top_k
-        self.centrality_measure = args.centrality
         last_flag = False
         for i, (in_features, out_features) in enumerate(zip(num_features[:-1], num_features[1:])):
             if i == self.num_layers - 1:
