@@ -6,7 +6,7 @@ from experiments.node_classification import Experiment
 import torch
 import numpy as np
 import pandas as pd
-from hyperparams import get_args_from_input
+from hyperparams import get_args_from_input_node
 from preprocessing import rewiring, sdrf, fosr, digl
 
 largest_cc = LargestConnectedComponents()
@@ -53,7 +53,7 @@ default_args = AttrDict({
 
 results = []
 args = default_args
-args += get_args_from_input()
+args += get_args_from_input_node()
 
 if args.dataset:
     # restricts to just the given dataset if this mode is chosen
