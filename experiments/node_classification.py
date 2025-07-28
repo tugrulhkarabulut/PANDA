@@ -60,6 +60,9 @@ class Experiment:
         elif self.validation_mask is None:
             non_test = [i for i in range(self.num_nodes) if not i in self.test_mask]
             self.train_mask, self.validation_mask = train_test_split(non_test, test_size=self.args.validation_fraction/(self.args.validation_fraction + self.args.train_fraction))
+
+        print("ARGS:", self.args)
+        print("MODEL:", self.model)
         
     def run(self):
         optimizer = torch.optim.Adam(self.model.parameters(), lr=self.args.learning_rate)
