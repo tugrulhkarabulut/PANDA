@@ -16,12 +16,13 @@ cornell = WebKB(root="data", name="Cornell")
 wisconsin = WebKB(root="data", name="Wisconsin")
 texas = WebKB(root="data", name="Texas")
 chameleon = WikipediaNetwork(root="data", name="chameleon")
-squirrel = WikipediaNetwork(root="data", name="squirrel")
-actor = Actor(root="data")
+# squirrel = WikipediaNetwork(root="data", name="squirrel")
+# actor = Actor(root="data")
 cora = Planetoid(root="data", name="cora")
 citeseer = Planetoid(root="data", name="citeseer")
-pubmed = Planetoid(root="data", name="pubmed")
-datasets = {"cornell": cornell, "wisconsin": wisconsin, "texas": texas, "squirrel": squirrel, "actor": actor, "cora": cora, "citeseer": citeseer}
+# pubmed = Planetoid(root="data", name="pubmed")
+# datasets = {"cornell": cornell, "wisconsin": wisconsin, "texas": texas, "squirrel": squirrel, "actor": actor, "cora": cora, "citeseer": citeseer}
+datasets = {"cornell": cornell, "wisconsin": wisconsin, "texas": texas, "chameleon": chameleon, "cora": cora, "citeseer": citeseer}
 
 for key in datasets:
     dataset = datasets[key]
@@ -39,19 +40,20 @@ default_args = AttrDict({
     "hidden_dim": 128,
     "learning_rate": 1e-3,
     "layer_type": "R-GCN",
-    "display": False,
-    "num_trials": 100,
+    "display": True,
+    "num_trials": 10,
     "eval_every": 1,
     "rewiring": "none",
     "num_iterations": 50,
     "num_relations": 2,
     "patience": 100,
-    "dataset": None
-    })
+    "dataset": None,
+})
 
 
 results = []
-args = get_args_from_input()
+args = default_args
+args += get_args_from_input()
 
 if args.dataset:
     # restricts to just the given dataset if this mode is chosen
